@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Счета</title>
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="~/Scripts/AnneScript.js"></script>
+</head>
+<body ng-app="App1" ng-controller="waterBillsCtrl">
+    <div class="loginDiv">
+        <button class="btn logOn" data-toggle="modal" data-target=".bs-login-form">LogIn</button>
+        <br/>
+        @Html.ActionLink("Logout", "LogOff", "Home", null, new { @class = "logOffClass" })
+    </div>
+<div class="container body-content">
+    @RenderBody()
+    <hr/>
+    <footer>
+
+    </footer>
+</div>
+<!-- Small modal -->
+<div class="modal fade bs-login-form" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+            {
+                <input type="text" name="login" placeholder="" style="width: 100px;"/>
+                <br/>
+                <input type="password" name="password" placeholder="password" style="width: 100px;"/>
+                <br/>
+                <input type="submit" value="Зайти" class="buttonAdd"/>
+
+            }
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+</body>
+</html>

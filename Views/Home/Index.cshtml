@@ -1,0 +1,278 @@
+﻿@{
+    ViewBag.Title = "Счета";
+}
+@model billsSite.Models.Bills
+<div class="paymentResult"><h1>К оплате {{ calcResSumm()| number : 5 }}р</h1></div>
+<h2>Аня крута!</h2>
+
+<div class="container-fluid" >
+<div class="row">
+    <div class="col-md-5 borderedTable" ng-model="waterBills">
+        <p>
+            Water
+            <button class="buttonAdd" ng-click="showWater = !showWater">\/</button>
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <button class="buttonAdd" ng-click="wBillCreate()">+</button>
+            }
+        </p>
+        <table class="table table-bordered table-hover  ">
+            <tr class="header">
+                <td>
+                    <p>месяц</p>
+                </td>
+                <td>
+                    <p>сумма</p>
+                </td>
+                @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+                {
+                    <td>
+                        <p>статус</p>
+                    </td>
+                }
+            </tr>
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <tr>
+                    <td  class="dateInput">
+                        <input type="date" ng-model="newWBill.month" />
+                    </td>
+                    <td>
+                        <input type="number" ng-model="newWBill.summRub" />
+                    </td>
+
+                    <td></td>
+
+                </tr>
+            }
+            <tr ng-repeat="x in bills.water | visib : true" ng-class="{'notPaid' : !x.isPaid, 'paid' : x.isPaid }">
+                <td>{{ x.month|ctime| date : 'dd.MM.yy'}}</td>
+                <td>{{ x.summRub }}</td>
+                @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+                {
+                    <td>
+                        <button class="buttonAdd" ng-click="waterPaid(x.id)">+</button>
+                    </td>
+                }
+            </tr>
+            <tr ng-repeat="x in bills.water | visib : false" ng-class="{'notPaid' : !x.isPaid, 'paid' : x.isPaid }" ng-show="showWater">
+                <td>{{ x.month|ctime| date : 'dd.MM.yy'}}</td>
+                <td>{{ x.summRub }}</td>
+                @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+                {
+                    <td>
+                        <button class="buttonAdd" ng-click="waterPaid(x.id)">+</button>
+                    </td>
+                }
+            </tr>
+        </table>
+    </div>
+
+
+    <div class="col-md-7 borderedTable">
+        <p>
+            Electrisity
+            <button class="buttonAdd" ng-click="showElect = !showElect">\/</button>
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <button class="buttonAdd" ng-click="eBillCreate()">+</button>
+            }
+        </p>
+        <table class="table table-bordered table-hover  ">
+            <tr class="header">
+                <td>
+                    <p>месяц</p>
+                </td>
+                <td>
+                    <p>показания</p>
+                </td>
+                <td>
+                    <p>тариф</p>
+                </td>
+                <td>
+                    <p>сумма</p>
+                </td>
+                @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+                {
+                    <td>
+                        <p>статус</p>
+                    </td>
+                }
+            </tr>
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <tr>
+                    <td  class="dateInput">
+                        <input type="date" ng-model="newEBill.month" />
+                    </td>
+                    <td>
+                        <input type="number" ng-model="newEBill.conterNumber"/>
+                    </td>
+                    <td>
+                        <input type="number" ng-init="newEBill.tariff = 0" ng-model="newEBill.tariff" />
+                    </td>
+                    <td>
+                        {{bills.elect.length==0 ? 0 : newEBill.tariff * (-bills.elect[0].conterNumber + newEBill.conterNumber)}}
+                    </td>
+                    <td></td>
+
+                </tr>
+            }
+
+            <tr ng-repeat="x in bills.elect | visib : true" ng-class="{'notPaid' : !x.isPaid, 'paid' : x.isPaid }">
+                <td>{{ x.month|ctime| date : 'dd.MM.yy'}}</td>
+                <td>{{ x.conterNumber }}</td>
+                <td>{{ x.tariff }}</td>
+                <td>{{ x.summRub }}</td>
+                @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+                {
+                    <td>
+                        <button class="buttonAdd" ng-click="electPaid(x.id)">+</button>
+                    </td>
+                }
+            </tr>
+            <tr ng-repeat="x in bills.elect | visib : false" ng-class="{'notPaid' : !x.isPaid, 'paid' : x.isPaid }" ng-show="showElect">
+                <td>{{ x.month|ctime| date : 'dd.MM.yy'}}</td>
+                <td>{{ x.conterNumber }}</td>
+                <td>{{ x.tariff }}</td>
+                <td>{{ x.summRub }}</td>
+                @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+                {
+                    <td>
+                        <button class="buttonAdd" ng-click="electPaid(x.id)">+</button>
+                    </td>
+                }
+            </tr>
+
+        </table>
+    </div>
+
+</div>
+
+
+<div class="row">
+
+    <div class="col-md-3 borderedTable">
+        <p>
+            Meetings <button class="buttonAdd" ng-click="showOneMeet=!showOneMeet;">\/</button>
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <button class="buttonAdd" ng-click="newMeetCreate()">+</button>
+            }
+        </p>
+        <table class="table table-bordered table-hover  ">
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <tr>
+                    <td  class="dateInput">
+                        <input type="date" ng-model="newMeet.month"/>
+                    </td>
+                </tr>
+            }
+            <tr ng-repeat="x in bills.meet  |showOne :showOneMeet">
+                <td>{{ x.month|ctime| date : 'dd.MM.yy'}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!---Rent-->
+    <div class="col-md-3 borderedTable">
+        <p>
+            Rent
+            <button class="buttonAdd" ng-click="showRent = !showRent">\/</button>
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <button class="buttonAdd" ng-click="rBillCreate()">+</button>
+            }
+        </p>
+        <table class="table table-bordered table-hover  ">
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <tr class="header">
+                    <td>
+                        <p>месяц</p>
+                    </td>
+
+                    <td>
+                        <p>статус</p>
+                    </td>
+
+                </tr>
+            }
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <tr>
+                    <td class="dateInput">
+                        <input type="date" ng-model="newRBill.month" />
+                    </td>
+                    <td></td>
+
+                </tr>
+            }
+            <tr ng-repeat="x in bills.rent | visib : true" ng-class="{'notPaid' : !x.isPaid, 'paid' : x.isPaid }">
+                <td>{{ x.month|ctime| date : 'dd.MM.yy'}}</td>
+                @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+                {
+                    <td>
+                        <button class="buttonAdd" ng-click="rentPaid(x.id)">+</button>
+                    </td>
+                }
+            </tr>
+            <tr ng-repeat="x in bills.rent | visib : false" ng-class="{'notPaid' : !x.isPaid, 'paid' : x.isPaid }" ng-show="showRent">
+                <td>{{ x.month|ctime| date : 'dd.MM.yy'}}</td>
+                @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+                {
+                    <td>
+                        <button class="buttonAdd" ng-click="rentPaid(x.id)">+</button>
+                    </td>
+                }
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-6 borderedTable">
+        <p>
+            Utility Payments
+            <button class="buttonAdd" ng-click="showOnePay=!showOnePay;">\/</button>
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <button class="buttonAdd" ng-click="paymentCreate()">+</button>
+            }
+        </p>
+        <table class="table table-bordered table-hover  ">
+            <tr class="header">
+                <td>
+                    <p>дата</p>
+                </td>
+                <td>
+                    <p>оплачено</p>
+                </td>
+                <td>
+                    <p>переплата</p>
+                </td>
+            </tr>
+            @if (HttpContext.Current.User.Identity.Name.Equals("admin"))
+            {
+                <tr>
+                    <td  class="dateInput">
+                        <input type="date" ng-model="newPay.month"/>
+                    </td>
+                    <td>
+                        <input type="number" ng-model="newPay.summRub"/>
+                    </td>
+                    <td>
+                        <input type="number" ng-model="newPay.debt" />
+                    </td>
+                    <td></td>
+                </tr>
+            }
+            <tr ng-repeat="x in bills.pay |showOne :showOnePay">
+                <td>{{ x.month|ctime| date : 'dd.MM.yy'}}</td>
+                <td>{{ x.summRub }}</td>
+                <td ng-class="{'notPaid' : x.debt < 0, 'paid' : x.debt > 0 }">{{ x.debt}}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+</div>
